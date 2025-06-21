@@ -77,10 +77,13 @@
                             type="password" 
                             id="password" 
                             name="password" 
+                            maxlength="8"
+                            pattern="[a-zA-Z0-9]*"
                             class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-60 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-transparent"
                             placeholder="Add password protection (optional)"
+                            oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')"
                         >
-                        <p class="text-xs text-white text-opacity-60 mt-1">Leave empty for public access</p>
+                        <p class="text-xs text-white text-opacity-60 mt-1">Max 8 characters, letters and numbers only</p>
                     </div>
 
                     <!-- Submit Button -->

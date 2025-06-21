@@ -4,7 +4,7 @@ import { dirname, join } from 'path';
 import bodyParser from 'body-parser';
 import sqlite3 from 'sqlite3';
 import { v4 as uuidv4 } from 'uuid';
-import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import QRCode from 'qrcode';
 import { contentFilter } from './filters.js';
 
@@ -13,6 +13,37 @@ const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Simple password hashing using crypto (WebContainer compatible)
+function hashPassword(password) {
+  const salt = crypto.randomBytes(16).toString('hex');
+  const hash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
+  return `${salt}:${hash}`;
+}
+
+function verifyPassword(password, hashedPassword) {
+  const [salt, hash] = hashedPassword.split(':');
+  const verifyHash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
+  return hash === verifyHash;
+}
+
+// Password validation function
+function validatePassword(password) {
+  if (!password) return { valid: true }; // Optional password
+  
+  // Check length (max 8 characters)
+  if (password.length > 8) {
+    return { valid: false, error: 'Password must be 8 characters or less' };
+  }
+  
+  // Check alphanumeric only (letters and numbers)
+  const alphanumericRegex = /^[a-zA-Z0-9]+$/;
+  if (!alphanumericRegex.test(password)) {
+    return { valid: false, error: 'Password must contain only letters and numbers' };
+  }
+  
+  return { valid: true };
+}
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -60,12 +91,23 @@ app.post('/create', async (req, res) => {
       });
     }
 
+    // Validate password if provided
+    if (password && password.trim().length > 0) {
+      const passwordValidation = validatePassword(password.trim());
+      if (!passwordValidation.valid) {
+        return res.render('index', { 
+          title: 'QR Letters - Send Secret Messages',
+          error: passwordValidation.error 
+        });
+      }
+    }
+
     // Run message through content filter
     const filterResult = contentFilter(message);
     if (filterResult.isExplicit) {
       return res.render('index', { 
         title: 'QR Letters - Send Secret Messages',
-        error: 'Message contains inappropriate content and cannot be sent' 
+        error: `Message blocked: ${filterResult.reason}. Please revise your message and try again.` 
       });
     }
 
@@ -75,7 +117,7 @@ app.post('/create', async (req, res) => {
     // Hash password if provided
     let passwordHash = null;
     if (password && password.trim().length > 0) {
-      passwordHash = await bcrypt.hash(password.trim(), 10);
+      passwordHash = hashPassword(password.trim());
     }
 
     // Store message in database
@@ -191,7 +233,7 @@ app.post('/message/:slug/verify', async (req, res) => {
 
     try {
       // Verify password
-      const isValidPassword = await bcrypt.compare(password, row.password_hash);
+      const isValidPassword = verifyPassword(password, row.password_hash);
       
       if (isValidPassword) {
         // Password correct, display message
