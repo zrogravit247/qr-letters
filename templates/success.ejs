@@ -49,9 +49,17 @@
                 <!-- QR Code -->
                 <div class="mb-6">
                     <div class="qr-container mx-auto">
-                        <img src="<%= qrCodeUrl %>" alt="QR Code" class="w-48 h-48 mx-auto">
+                        <img id="qr-image" src="<%= qrCodeUrl %>" alt="QR Code" class="w-48 h-48 mx-auto">
                     </div>
-                    <p class="text-white text-opacity-80 text-sm mt-3">Scan this QR code to access your message</p>
+                    <div class="flex justify-center space-x-3 mt-3">
+                        <p class="text-white text-opacity-80 text-sm">Scan this QR code to access your message</p>
+                        <button 
+                            onclick="downloadQR()"
+                            class="text-white text-opacity-80 hover:text-opacity-100 text-sm underline focus:outline-none"
+                        >
+                            Download QR
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Message Link -->
@@ -140,6 +148,36 @@
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
             });
+        }
+
+        function downloadQR() {
+            const qrImage = document.getElementById('qr-image');
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Create a new image to ensure it's loaded
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                
+                // Convert to blob and download
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'qr-letter.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 'image/png');
+            };
+            
+            img.src = qrImage.src;
         }
     </script>
 </body>
