@@ -1,13 +1,25 @@
 modules = ["nodejs-20", "web"]
-run = "npm run dev"
+run = "npm start"
 
 [nix]
 channel = "stable-24_05"
 
 [deployment]
-run = ["sh", "-c", "npm run dev"]
+run = ["sh", "-c", "npm start"]
 deploymentTarget = "cloudrun"
 
 [[ports]]
 localPort = 3000
 externalPort = 80
+
+[workflows]
+runButton = "Production Server"
+
+[[workflows.workflow]]
+name = "Production Server"
+author = 43976167
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm start"
