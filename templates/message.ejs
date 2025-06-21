@@ -6,89 +6,161 @@
     <title><%= title %></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
         .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #8B7355 0%, #A0956B 50%, #8B7355 100%);
         }
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+
+        .papyrus-paper {
+            background: linear-gradient(45deg, #F5E6D3 0%, #E8D5B7 25%, #F0E68C 50%, #E8D5B7 75%, #F5E6D3 100%);
+            background-size: 20px 20px;
+            position: relative;
+            box-shadow: 
+                inset 0 0 100px rgba(139, 115, 85, 0.1),
+                0 0 50px rgba(0, 0, 0, 0.3),
+                0 10px 30px rgba(0, 0, 0, 0.2);
         }
-        .hover-lift {
-            transition: transform 0.2s ease-in-out;
+
+        .papyrus-paper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(139, 115, 85, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 75% 75%, rgba(160, 149, 107, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 50% 50%, rgba(139, 115, 85, 0.05) 2px, transparent 2px);
+            background-size: 50px 50px, 30px 30px, 80px 80px;
+            pointer-events: none;
         }
-        .hover-lift:hover {
-            transform: translateY(-2px);
+
+        .papyrus-paper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 24px,
+                rgba(139, 115, 85, 0.1) 25px
+            );
+            pointer-events: none;
         }
-        .message-content {
-            background: rgba(255, 255, 255, 0.9);
-            color: #374151;
-            line-height: 1.6;
+
+        .handwriting {
+            font-family: 'Kalam', cursive;
+            color: #2C1810;
+            text-shadow: 1px 1px 2px rgba(139, 115, 85, 0.3);
+            line-height: 2;
+            font-size: 1.125rem;
+        }
+
+        .paper-edge {
+            border: 3px solid #D4AF86;
+            border-radius: 0;
+            position: relative;
+        }
+
+        .paper-edge::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border: 1px solid rgba(139, 115, 85, 0.3);
+            border-radius: 0;
+        }
+
+        .torn-edge {
+            position: relative;
+        }
+
+        .torn-edge::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            height: 10px;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0px,
+                #F5E6D3 5px,
+                transparent 10px,
+                #E8D5B7 15px,
+                transparent 20px
+            );
+            clip-path: polygon(0% 0%, 5% 100%, 10% 0%, 15% 100%, 20% 0%, 25% 100%, 30% 0%, 35% 100%, 40% 0%, 45% 100%, 50% 0%, 55% 100%, 60% 0%, 65% 100%, 70% 0%, 75% 100%, 80% 0%, 85% 100%, 90% 0%, 95% 100%, 100% 0%);
+        }
+
+        .vintage-button {
+            background: linear-gradient(145deg, #D4AF86, #B8956A);
+            border: 2px solid #8B7355;
+            color: #2C1810;
+            box-shadow: 
+                inset 0 2px 4px rgba(255, 255, 255, 0.3),
+                0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .vintage-button:hover {
+            background: linear-gradient(145deg, #E8D5B7, #D4AF86);
+            transform: translateY(-1px);
+            box-shadow: 
+                inset 0 2px 4px rgba(255, 255, 255, 0.4),
+                0 6px 12px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
     <div class="min-h-screen flex items-center justify-center p-4">
-        <div class="w-full max-w-2xl">
+        <div class="max-w-4xl w-full">
             <!-- Header -->
             <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-green-500 bg-opacity-20 rounded-full mb-4">
-                    <svg class="w-8 h-8 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                    </svg>
-                </div>
-                <h1 class="text-3xl font-bold text-white mb-2">Your Message</h1>
-                <p class="text-white text-opacity-80">Delivered securely via QR Letters</p>
+                <h1 class="text-4xl font-bold text-amber-100 mb-2 drop-shadow-lg">Your Secret Letter</h1>
+                <p class="text-amber-200 text-opacity-80 text-sm">Delivered on <%= createdAt %></p>
             </div>
 
-            <!-- Message Card -->
-            <div class="glass-effect rounded-2xl p-8 shadow-xl">
-                <!-- Message Content -->
-                <div class="message-content rounded-xl p-6 mb-6 shadow-inner">
-                    <div class="prose prose-lg max-w-none">
-                        <p class="text-gray-800 whitespace-pre-wrap text-lg leading-relaxed"><%= message %></p>
-                    </div>
-                </div>
-
-                <!-- Message Info -->
-                <div class="flex items-center justify-between text-white text-opacity-60 text-sm border-t border-white border-opacity-20 pt-4">
-                    <div class="flex items-center">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <span>Created: <%= createdAt %></span>
-                    </div>
-                    <div class="flex items-center">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                        <span>Secure Delivery</span>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="mt-8 space-y-3">
-                    <a 
-                        href="/" 
-                        class="block w-full bg-white text-purple-600 font-semibold py-3 px-6 rounded-lg hover-lift hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-200 text-center"
-                    >
-                        <div class="flex items-center justify-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
-                            Send Your Own Message
+            <!-- Paper Letter -->
+            <div class="papyrus-paper paper-edge torn-edge p-12 mb-8 min-h-[400px]">
+                <div class="relative z-10">
+                    <!-- Letter Header -->
+                    <div class="text-center mb-8">
+                        <div class="handwriting text-2xl font-bold text-amber-900 mb-2">
+                            A Secret Message
                         </div>
-                    </a>
+                        <div class="w-32 h-px bg-amber-700 mx-auto opacity-60"></div>
+                    </div>
+
+                    <!-- Message Content -->
+                    <div class="handwriting text-justify leading-loose">
+                        <%- message.replace(/\n/g, '<br><br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/_(.*?)_/g, '<u>$1</u>') %>
+                    </div>
+
+                    <!-- Letter Footer -->
+                    <div class="mt-12 text-right">
+                        <div class="handwriting text-amber-800 opacity-70">
+                            ~ End of Message ~
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Footer -->
-            <div class="text-center mt-8">
-                <p class="text-white text-opacity-60 text-sm">
-                    Powered by QR Letters • Secure • Private • Easy
-                </p>
+            <!-- Actions -->
+            <div class="text-center">
+                <a href="/" class="vintage-button inline-flex items-center px-8 py-4 font-semibold rounded-lg transition-all duration-200">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                    </svg>
+                    Write Another Letter
+                </a>
             </div>
         </div>
     </div>

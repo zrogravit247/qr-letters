@@ -49,9 +49,17 @@
                 <!-- QR Code -->
                 <div class="mb-6">
                     <div class="qr-container mx-auto">
-                        <img src="<%= qrCodeUrl %>" alt="QR Code" class="w-48 h-48 mx-auto">
+                        <img id="qr-image" src="<%= qrCodeUrl %>" alt="QR Code" class="w-48 h-48 mx-auto">
                     </div>
-                    <p class="text-white text-opacity-80 text-sm mt-3">Scan this QR code to access your message</p>
+                    <div class="space-y-2">
+                        <p class="text-white text-opacity-80 text-sm mt-3">Scan this QR code to access your message</p>
+                        <button 
+                            id="download-qr" 
+                            class="bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-colors text-sm font-medium"
+                        >
+                            Download QR Code
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Message Link -->
@@ -125,7 +133,7 @@
                 const originalText = button.textContent;
                 button.textContent = 'Copied!';
                 button.classList.add('text-green-300');
-                
+
                 setTimeout(() => {
                     button.textContent = originalText;
                     button.classList.remove('text-green-300');
@@ -141,6 +149,15 @@
                 document.body.removeChild(textArea);
             });
         }
+
+        // QR Code download functionality
+        document.getElementById('download-qr').addEventListener('click', function() {
+            const qrImage = document.getElementById('qr-image');
+            const link = document.createElement('a');
+            link.download = 'qr-code.png';
+            link.href = qrImage.src;
+            link.click();
+        });
     </script>
 </body>
 </html>
