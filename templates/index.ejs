@@ -48,19 +48,60 @@
 
                 <form action="/create" method="POST" class="space-y-6">
                     <!-- Message Input -->
-                    <div>
+                    <div id="editor-container" class="relative">
                         <label for="message" class="block text-sm font-medium text-white mb-2">
                             Your Message
                         </label>
-                        <textarea 
-                            id="message" 
-                            name="message" 
-                            rows="4" 
-                            class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-60 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-transparent resize-none"
-                            placeholder="Write your secret message here..."
-                            required
-                        ></textarea>
-                        <p class="text-xs text-white text-opacity-60 mt-1">Your message will be encrypted and accessible via QR code</p>
+                        
+                        <!-- Toolbar -->
+                        <div class="flex items-center justify-between mb-2 p-2 bg-white bg-opacity-10 rounded-lg">
+                            <div class="flex items-center space-x-2">
+                                <button type="button" id="bold-btn" class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors" title="Bold">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M6 2h4a4 4 0 014 4v1a4 4 0 01-4 4H6V2zm0 7h4a2 2 0 012 2v1a2 2 0 01-2 2H6v-5z"/>
+                                    </svg>
+                                </button>
+                                <button type="button" id="italic-btn" class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors" title="Italic">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 4h6v2h-2l-2 8h2v2H8v-2h2l2-8H8V4z"/>
+                                    </svg>
+                                </button>
+                                <button type="button" id="underline-btn" class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors" title="Underline">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M6 2v8a4 4 0 008 0V2h2v8a6 6 0 01-12 0V2h2zm0 16h8v2H6v-2z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <button type="button" id="fullscreen-btn" class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors" title="Toggle Fullscreen">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M3 3h4v2H5v2H3V3zm10 0h4v4h-2V5h-2V3zM3 13v4h4v-2H5v-2H3zm14 0v2h-2v2h-4v-2h2v-2h4z"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Text Editor -->
+                        <div class="relative">
+                            <div 
+                                id="editor" 
+                                contenteditable="true"
+                                class="w-full min-h-[120px] px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-transparent resize-none overflow-y-auto"
+                                style="max-height: 300px;"
+                                data-placeholder="Write your secret message here..."
+                            ></div>
+                            <textarea 
+                                id="message" 
+                                name="message" 
+                                class="hidden"
+                                required
+                            ></textarea>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mt-2">
+                            <p class="text-xs text-white text-opacity-60">Your message will be encrypted and accessible via QR code</p>
+                            <div class="text-xs text-white text-opacity-80">
+                                <span id="word-count">0</span> / 1000 words
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Password Input (Optional) -->
@@ -101,5 +142,234 @@
             </div>
         </div>
     </div>
+
+    <!-- Fullscreen Modal -->
+    <div id="fullscreen-modal" class="fixed inset-0 bg-black bg-opacity-95 z-50 hidden">
+        <div class="h-full flex flex-col p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-white">Full Screen Editor</h2>
+                <button id="exit-fullscreen" class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Fullscreen Toolbar -->
+            <div class="flex items-center justify-between mb-4 p-3 bg-white bg-opacity-10 rounded-lg">
+                <div class="flex items-center space-x-3">
+                    <button type="button" id="fs-bold-btn" class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors" title="Bold">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M6 2h4a4 4 0 014 4v1a4 4 0 01-4 4H6V2zm0 7h4a2 2 0 012 2v1a2 2 0 01-2 2H6v-5z"/>
+                        </svg>
+                    </button>
+                    <button type="button" id="fs-italic-btn" class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors" title="Italic">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 4h6v2h-2l-2 8h2v2H8v-2h2l2-8H8V4z"/>
+                        </svg>
+                    </button>
+                    <button type="button" id="fs-underline-btn" class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors" title="Underline">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M6 2v8a4 4 0 008 0V2h2v8a6 6 0 01-12 0V2h2zm0 16h8v2H6v-2z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="text-sm text-white text-opacity-80">
+                    <span id="fs-word-count">0</span> / 1000 words
+                </div>
+            </div>
+            
+            <div 
+                id="fs-editor" 
+                contenteditable="true"
+                class="flex-1 p-4 bg-white bg-opacity-10 border border-white border-opacity-30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-transparent resize-none overflow-y-auto text-lg"
+                data-placeholder="Write your secret message here..."
+            ></div>
+        </div>
+    </div>
+
+    <script>
+        // Editor functionality
+        const editor = document.getElementById('editor');
+        const fsEditor = document.getElementById('fs-editor');
+        const hiddenTextarea = document.getElementById('message');
+        const wordCountEl = document.getElementById('word-count');
+        const fsWordCountEl = document.getElementById('fs-word-count');
+        const fullscreenModal = document.getElementById('fullscreen-modal');
+        
+        // Formatting buttons
+        const boldBtn = document.getElementById('bold-btn');
+        const italicBtn = document.getElementById('italic-btn');
+        const underlineBtn = document.getElementById('underline-btn');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const exitFullscreenBtn = document.getElementById('exit-fullscreen');
+        
+        // Fullscreen formatting buttons
+        const fsBoldBtn = document.getElementById('fs-bold-btn');
+        const fsItalicBtn = document.getElementById('fs-italic-btn');
+        const fsUnderlineBtn = document.getElementById('fs-underline-btn');
+
+        // Word count and limit functionality
+        function countWords(text) {
+            return text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+        }
+
+        function updateWordCount(editorEl, countEl) {
+            const text = editorEl.innerText || '';
+            const wordCount = countWords(text);
+            countEl.textContent = wordCount;
+            
+            if (wordCount > 1000) {
+                countEl.parentElement.classList.add('text-red-300');
+                return false;
+            } else {
+                countEl.parentElement.classList.remove('text-red-300');
+                return true;
+            }
+        }
+
+        function enforceWordLimit(editorEl) {
+            const text = editorEl.innerText || '';
+            const words = text.trim().split(/\s+/);
+            
+            if (words.length > 1000) {
+                const limitedText = words.slice(0, 1000).join(' ');
+                editorEl.innerText = limitedText;
+                
+                // Move cursor to end
+                const range = document.createRange();
+                const sel = window.getSelection();
+                range.selectNodeContents(editorEl);
+                range.collapse(false);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+        }
+
+        // Placeholder functionality
+        function updatePlaceholder(editorEl) {
+            if (editorEl.innerText.trim() === '') {
+                editorEl.classList.add('empty');
+            } else {
+                editorEl.classList.remove('empty');
+            }
+        }
+
+        // Format text functions
+        function formatText(command) {
+            document.execCommand(command, false, null);
+        }
+
+        // Sync editors
+        function syncEditors(sourceEditor, targetEditor) {
+            targetEditor.innerHTML = sourceEditor.innerHTML;
+            updateWordCount(targetEditor, targetEditor === fsEditor ? fsWordCountEl : wordCountEl);
+            updatePlaceholder(targetEditor);
+        }
+
+        // Event listeners for main editor
+        editor.addEventListener('input', function() {
+            enforceWordLimit(this);
+            updateWordCount(this, wordCountEl);
+            updatePlaceholder(this);
+            hiddenTextarea.value = this.innerText;
+            syncEditors(this, fsEditor);
+        });
+
+        editor.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const text = e.clipboardData.getData('text/plain');
+            document.execCommand('insertText', false, text);
+        });
+
+        // Event listeners for fullscreen editor
+        fsEditor.addEventListener('input', function() {
+            enforceWordLimit(this);
+            updateWordCount(this, fsWordCountEl);
+            updatePlaceholder(this);
+            hiddenTextarea.value = this.innerText;
+            syncEditors(this, editor);
+        });
+
+        fsEditor.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const text = e.clipboardData.getData('text/plain');
+            document.execCommand('insertText', false, text);
+        });
+
+        // Formatting button event listeners
+        boldBtn.addEventListener('click', () => formatText('bold'));
+        italicBtn.addEventListener('click', () => formatText('italic'));
+        underlineBtn.addEventListener('click', () => formatText('underline'));
+        
+        fsBoldBtn.addEventListener('click', () => formatText('bold'));
+        fsItalicBtn.addEventListener('click', () => formatText('italic'));
+        fsUnderlineBtn.addEventListener('click', () => formatText('underline'));
+
+        // Fullscreen functionality
+        fullscreenBtn.addEventListener('click', function() {
+            fullscreenModal.classList.remove('hidden');
+            fsEditor.focus();
+        });
+
+        exitFullscreenBtn.addEventListener('click', function() {
+            fullscreenModal.classList.add('hidden');
+            editor.focus();
+        });
+
+        // Keyboard shortcut for fullscreen (F11 or Ctrl+F)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F11' || (e.ctrlKey && e.key === 'f')) {
+                e.preventDefault();
+                if (fullscreenModal.classList.contains('hidden')) {
+                    fullscreenModal.classList.remove('hidden');
+                    fsEditor.focus();
+                } else {
+                    fullscreenModal.classList.add('hidden');
+                    editor.focus();
+                }
+            }
+            
+            // Escape to exit fullscreen
+            if (e.key === 'Escape' && !fullscreenModal.classList.contains('hidden')) {
+                fullscreenModal.classList.add('hidden');
+                editor.focus();
+            }
+        });
+
+        // Initialize placeholders
+        updatePlaceholder(editor);
+        updatePlaceholder(fsEditor);
+        updateWordCount(editor, wordCountEl);
+        updateWordCount(fsEditor, fsWordCountEl);
+    </script>
+
+    <style>
+        /* Placeholder styles */
+        [contenteditable="true"].empty:before {
+            content: attr(data-placeholder);
+            color: rgba(255, 255, 255, 0.6);
+            pointer-events: none;
+        }
+        
+        [contenteditable="true"]:focus {
+            outline: none;
+        }
+        
+        /* Formatting styles */
+        [contenteditable="true"] b,
+        [contenteditable="true"] strong {
+            font-weight: bold;
+        }
+        
+        [contenteditable="true"] i,
+        [contenteditable="true"] em {
+            font-style: italic;
+        }
+        
+        [contenteditable="true"] u {
+            text-decoration: underline;
+        }
+    </style>
 </body>
 </html>
